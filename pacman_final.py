@@ -487,7 +487,7 @@ class PacmanGameController:
     def __init__(self):
         self.ascii_maze = [
             "XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-            "XP           XX            X",
+            "X            XX            X",
             "X XXXX XXXXX XX XXXXX XXXX X",
             "X XXXXOXXXXX XX XXXXXOXXXX X",
             "X XXXX XXXXX XX XXXXX XXXX X",
@@ -498,18 +498,18 @@ class PacmanGameController:
             "XXXXXX XXXXX XX XXXXX XXXXXX",
             "XXXXXX XXXXX XX XXXXX XXXXXX",
             "XXXXXX XX     G    XX XXXXXX",
-            "XXXXXX XX XXX  XXX XX XXXXXX",
-            "XXXXXX XX X      X XX XXXXXX",
-            "   G      X      X          ",
-            "XXXXXX XX X      X XX XXXXXX",
+            "XXXXXX XX XXXAAXXX XX XXXXXX",
+            "XXXXXX XX X G    X XX XXXXXX",
+            "          X    G X          ",
+            "XXXXXX XX X G    X XX XXXXXX",
             "XXXXXX XX XXXXXXXX XX XXXXXX",
-            "XXXXXX XX    G     XX XXXXXX",
+            "XXXXXX XX    P     XX XXXXXX",
             "XXXXXX XX XXXXXXXX XX XXXXXX",
             "XXXXXX XX XXXXXXXX XX XXXXXX",
             "X            XX            X",
             "X XXXX XXXXX XX XXXXX XXXX X",
             "X XXXX XXXXX XX XXXXX XXXX X",
-            "X   XX       G        XX   X",
+            "X   XX                XX   X",
             "XXX XX XX XXXXXXXX XX XX XXX",
             "XXX XX XX XXXXXXXX XX XX XXX",
             "X      XX    XX    XX      X",
@@ -524,6 +524,8 @@ class PacmanGameController:
         self.powerup_spaces = []
         self.reachable_spaces = []
         self.ghost_spawns = []
+        self.pacman_spawn = []
+        self.gates = []
         self.ghost_colors = [
             "images/ghost.png",
             "images/ghost_pink.png",
@@ -550,9 +552,13 @@ class PacmanGameController:
             for y, column in enumerate(row):
                 if column == "G":
                     self.ghost_spawns.append((y, x))
-
+                if column == "A":
+                    self.gates.append((y, x))
+                if column == "P":
+                    self.pacman_spawn.append((y, x))
                 if column == "X":
                     binary_row.append(0)
+                
                 else:
                     binary_row.append(1)
                     self.cookie_spaces.append((y, x))
@@ -590,8 +596,10 @@ if __name__ == "__main__":
                       pacman_game.ghost_colors[i % 4])
         game_renderer.add_ghost(ghost)
 
-    pacman = Hero(game_renderer, unified_size, unified_size, unified_size)
-    game_renderer.add_hero(pacman)
+    for i, pacman_spawn in enumerate(pacman_game.pacman_spawn):
+        translated = translate_maze_to_screen(pacman_spawn)
+        pacman = Hero(game_renderer, translated[0], translated[1], unified_size)
+        game_renderer.add_hero(pacman)
+        
     game_renderer.set_current_mode(GhostBehaviour.CHASE)
     game_renderer.tick(120)
-    
